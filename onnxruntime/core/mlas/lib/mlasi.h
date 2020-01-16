@@ -34,6 +34,12 @@ Abstract:
 #include <immintrin.h>
 #endif
 #endif
+#if defined(__powerpc64__)
+#define NO_WARN_X86_INTRINSICS
+#include "ppc64/NEON_2_SSE.h" 
+//#error Im definitely in that section
+#endif
+
 
 //
 // Macro to place variables at a specified alignment.
@@ -696,7 +702,7 @@ MlasGetMaximumThreadCount(
 #elif defined(MLAS_TARGET_ARM64)
 #define MLAS_NEON_INTRINSICS
 #define MLAS_NEON64_INTRINSICS
-#elif defined(MLAS_TARGET_AMD64_IX86)
+#elif defined(MLAS_TARGET_AMD64_IX86) || defined(__ALTIVEC__)
 #define MLAS_SSE2_INTRINSICS
 #if defined(__SSE4_1__) || (defined(_MSC_VER) && defined(__AVX__))
 #define MLAS_SSE41_INTRINSICS
