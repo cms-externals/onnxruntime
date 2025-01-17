@@ -23,6 +23,7 @@ Abstract:
 #include "kleidiai/mlasi_kleidiai.h"
 #endif
 
+#include <string>
 #include <thread>
 #include <mutex>
 
@@ -353,8 +354,11 @@ Return Value:
         //
 
         uint64_t xcr0 = MlasReadExtendedControlRegister(_XCR_XFEATURE_ENABLED_MASK);
+        const char *cpu_opt = std::getenv("MLAS_DYNAMIC_CPU_ARCH");
+        if (cpu_opt == nullptr) cpu_opt = "99";
+        auto opt = std::stoi(cpu_opt);
 
-        if ((xcr0 & 0x6) == 0x6) {
+        if ((opt > 0) && (xcr0 & 0x6) == 0x6) {
 
             this->GemmFloatKernel = MlasGemmFloatKernelAvx;
 
@@ -388,7 +392,7 @@ Return Value:
             __cpuid_count(7, 0, Cpuid7[0], Cpuid7[1], Cpuid7[2], Cpuid7[3]);
 #endif
 
-            if (((Cpuid1[2] & 0x1000) != 0) && ((Cpuid7[1] & 0x20) != 0)) {
+            if ((opt > 1) && ((Cpuid1[2] & 0x1000) != 0) && ((Cpuid7[1] & 0x20) != 0)) {
 
                 this->Avx2Supported_ = true;
 
